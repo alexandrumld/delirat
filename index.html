@@ -847,8 +847,8 @@
             <span class="pink">SOUND</span> · <span class="amber">CULTURE</span> · CHAOS
         </div>
 
-        <div class="wordmark" id="wordmark">
-            <div class="wordmark-text" id="wordmarkText">DELIRAT</div>
+        <div class="wordmark" id="wordmark" aria-label="DELIRAT">
+            <div class="wordmark-text" id="wordmarkText" aria-hidden="true">DELIRAT</div>
         </div>
 
         <div class="countdown" id="countdown">
@@ -1095,6 +1095,7 @@
             canvas.height = canvasH * dpr;
             canvas.style.width = canvasW + 'px';
             canvas.style.height = canvasH + 'px';
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.scale(dpr, dpr);
         }
 
