@@ -27,7 +27,6 @@
             --muted: rgba(245,245,245,0.45);
             --dim: rgba(245,245,245,0.2);
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-            --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         html { scroll-behavior: smooth; }
@@ -40,7 +39,6 @@
             overflow-x: hidden;
         }
 
-        /* Only hide cursor if JS is active */
         body.gsap-ready { cursor: none; }
         @media (max-width: 768px) { body.gsap-ready { cursor: auto; } }
 
@@ -53,7 +51,7 @@
             inset: 0;
             pointer-events: none;
             z-index: 300;
-            opacity: 0.07;
+            opacity: 0.06;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' /%3E%3C/svg%3E");
             animation: grainShift 0.5s steps(6) infinite;
         }
@@ -73,7 +71,7 @@
             inset: 0;
             pointer-events: none;
             z-index: 1;
-            opacity: 0.025;
+            opacity: 0.02;
             background-image: radial-gradient(circle, var(--fuchsia) 1px, transparent 1.5px);
             background-size: 6px 6px;
         }
@@ -84,7 +82,7 @@
             inset: 0;
             pointer-events: none;
             z-index: 250;
-            background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%);
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5) 100%);
         }
 
         /* === SCROLL PROGRESS === */
@@ -96,6 +94,15 @@
             background: var(--fuchsia);
             z-index: 9998;
             box-shadow: 0 0 8px rgba(255,45,149,0.5);
+        }
+
+        /* === HERO CANVAS === */
+        #heroCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
         }
 
         /* === CUSTOM CURSOR === */
@@ -118,7 +125,6 @@
         .cursor-ring {
             width: 36px; height: 36px;
             border: 1px solid var(--white);
-            /* NO transform transition — JS ticker handles position */
             transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
         }
         .cursor-ring.hover {
@@ -146,6 +152,7 @@
             letter-spacing: -0.03em;
             color: var(--white);
             position: relative;
+            overflow: hidden;
         }
         .preloader-text::before,
         .preloader-text::after {
@@ -186,7 +193,7 @@
             100% { left: 200%; }
         }
 
-        /* === AMBIENT GLOWS === */
+        /* === GLOWS === */
         .glow {
             position: fixed;
             border-radius: 50%;
@@ -255,6 +262,7 @@
             justify-content: center;
             position: relative;
             padding: 5rem 2rem 3rem;
+            z-index: 10;
         }
 
         .hero-tag {
@@ -269,11 +277,12 @@
         .hero-tag .pink { color: var(--fuchsia); }
         .hero-tag .amber { color: var(--amber); }
 
-        /* === GLITCH WORDMARK === */
+        /* === SPLIT-TEXT WORDMARK === */
         .wordmark {
             position: relative;
             display: inline-block;
             margin-bottom: 2.5rem;
+            perspective: 800px;
         }
         .wordmark-text {
             font-family: 'Archivo Black', sans-serif;
@@ -285,42 +294,33 @@
             color: var(--white);
             position: relative;
             z-index: 2;
+            display: flex;
+            overflow: hidden;
         }
-        .wordmark-text::before,
-        .wordmark-text::after {
-            content: 'DELIRAT';
+        .char {
+            display: inline-block;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        .char::before {
+            content: attr(data-char);
             position: absolute;
             top: 0; left: 0;
             width: 100%;
-            height: 100%;
-        }
-        .wordmark-text::before {
             color: var(--fuchsia);
-            transform: translate(-4px, -2px);
-            opacity: 0.4;
-            z-index: 1;
-            animation: glitch1 3s infinite;
+            transform: translate(-3px, -1px);
+            opacity: 0.35;
+            z-index: -1;
         }
-        .wordmark-text::after {
+        .char::after {
+            content: attr(data-char);
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
             color: var(--amber);
-            transform: translate(4px, 2px);
-            opacity: 0.3;
-            z-index: 0;
-            animation: glitch2 3.5s infinite;
-        }
-        @keyframes glitch1 {
-            0%, 92%, 100% { transform: translate(-4px, -2px); opacity: 0.4; }
-            93% { transform: translate(-8px, 1px); opacity: 0.6; }
-            94% { transform: translate(-2px, -3px); opacity: 0.3; }
-            95% { transform: translate(-6px, 0px); opacity: 0.5; }
-            96% { transform: translate(-4px, -2px); opacity: 0.4; }
-        }
-        @keyframes glitch2 {
-            0%, 90%, 100% { transform: translate(4px, 2px); opacity: 0.3; }
-            91% { transform: translate(8px, -1px); opacity: 0.5; }
-            92% { transform: translate(2px, 3px); opacity: 0.2; }
-            93% { transform: translate(6px, 0px); opacity: 0.4; }
-            94% { transform: translate(4px, 2px); opacity: 0.3; }
+            transform: translate(3px, 1px);
+            opacity: 0.25;
+            z-index: -1;
         }
 
         /* === COUNTDOWN === */
@@ -496,25 +496,47 @@
         }
         @media (max-width: 600px) { .info-row-sub { text-align: left; } }
 
-        /* === LINEUP === */
-        .lineup {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-top: 3rem;
-        }
-        @media (min-width: 768px) { .lineup { grid-template-columns: 1fr 1fr; gap: 2rem; } }
-
-        .artist-card {
+        /* === HORIZONTAL LINEUP === */
+        .lineup-section {
             position: relative;
-            padding: 3rem 2rem;
+            z-index: 10;
+            overflow: hidden;
+        }
+        .lineup-header {
+            padding: 7rem 2rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        @media (min-width: 768px) { .lineup-header { padding: 9rem 2rem 3rem; } }
+        .lineup-pin {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .lineup-track {
+            display: flex;
+            gap: 3rem;
+            padding: 0 5rem;
+            will-change: transform;
+        }
+        .artist-card {
+            flex-shrink: 0;
+            width: 320px;
+            height: 420px;
+            position: relative;
             border: 1px solid rgba(255,45,149,0.12);
             background: rgba(45,27,78,0.12);
             overflow: hidden;
-            transform-style: preserve-3d;
-            perspective: 1000px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2.5rem 2rem;
             transition: border-color 0.4s ease, box-shadow 0.4s ease;
             will-change: transform;
+        }
+        @media (max-width: 768px) {
+            .artist-card { width: 260px; height: 360px; }
         }
         .artist-card:hover {
             border-color: var(--fuchsia);
@@ -540,7 +562,6 @@
             font-size: 0.6rem;
             letter-spacing: 0.3em;
             color: var(--amber);
-            margin-bottom: 1.2rem;
         }
         .artist-name {
             font-family: 'Archivo Black', sans-serif;
@@ -548,7 +569,6 @@
             text-transform: uppercase;
             letter-spacing: -0.02em;
             line-height: 1;
-            margin-bottom: 0.6rem;
         }
         .artist-name.tba { color: var(--dim); font-size: clamp(1.4rem, 3.5vw, 2rem); }
         .artist-tag {
@@ -559,6 +579,54 @@
             color: var(--muted);
         }
         .artist-tag .pink { color: var(--fuchsia); }
+
+        /* Mobile fallback: horizontal scroll */
+        @media (max-width: 768px) {
+            .lineup-pin { height: auto; padding: 2rem 0; }
+            .lineup-track {
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                padding: 0 1.5rem;
+            }
+            .artist-card { scroll-snap-align: start; }
+        }
+
+        /* === MANIFESTO === */
+        .manifesto-section {
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            padding: 0;
+        }
+        .manifesto-pin {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .manifesto-text {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(3rem, 12vw, 10rem);
+            text-transform: uppercase;
+            line-height: 0.9;
+            letter-spacing: -0.03em;
+            white-space: nowrap;
+            will-change: transform;
+            display: flex;
+            gap: 2rem;
+        }
+        .manifesto-text .pink { color: var(--fuchsia); }
+        .manifesto-text .amber { color: var(--amber); }
+        .manifesto-text .dim { color: var(--dim); }
+        .manifesto-dot {
+            color: var(--fuchsia);
+            opacity: 0.4;
+        }
+        @media (max-width: 768px) {
+            .manifesto-pin { height: 60vh; }
+            .manifesto-text { font-size: clamp(2rem, 14vw, 5rem); }
+        }
 
         /* === TICKETS === */
         .tickets {
@@ -728,14 +796,13 @@
             .cursor-dot, .cursor-ring { display: none !important; }
             body { cursor: auto !important; }
             .preloader { display: none !important; }
+            #heroCanvas { display: none !important; }
         }
     </style>
 
-    <!-- Fallback: if JS disabled, show everything immediately -->
     <noscript>
         <style>
             .preloader { display: none !important; }
-            .hero-tag, .countdown, .scroll-cue { opacity: 1 !important; }
             body { cursor: auto !important; }
         </style>
     </noscript>
@@ -753,6 +820,9 @@
 
     <!-- Vignette -->
     <div class="vignette"></div>
+
+    <!-- Hero canvas (flow field) -->
+    <canvas id="heroCanvas"></canvas>
 
     <!-- Custom cursor -->
     <div class="cursor-dot" id="cursorDot"></div>
@@ -778,7 +848,7 @@
         </div>
 
         <div class="wordmark" id="wordmark">
-            <div class="wordmark-text">DELIRAT</div>
+            <div class="wordmark-text" id="wordmarkText">DELIRAT</div>
         </div>
 
         <div class="countdown" id="countdown">
@@ -855,27 +925,59 @@
         </div>
     </section>
 
-    <!-- === LINEUP === -->
-    <section class="container" id="lineup">
-        <div class="section-label" data-reveal>02 — LINEUP</div>
-        <h2 class="section-title" data-reveal>
-            <span class="amber">LINEUP</span><br>
-            <span class="dim">ÎN CURÂND</span>
-        </h2>
-        <p class="section-text" data-reveal>
-            Doi artiști locali, sunet trap / manele. Numele soon pe @delirat.events.
-        </p>
-
-        <div class="lineup">
-            <div class="artist-card" data-tilt data-reveal>
-                <div class="artist-num">ARTIST 01</div>
-                <div class="artist-name tba">ÎN CURÂND</div>
-                <div class="artist-tag"><span class="pink">TRAP</span> · LOCAL</div>
+    <!-- === MANIFESTO (horizontal scroll pin) === -->
+    <section class="manifesto-section" id="manifesto">
+        <div class="manifesto-pin" id="manifestoPin">
+            <div class="manifesto-text" id="manifestoText">
+                <span class="pink">SOUND</span><span class="manifesto-dot">◈</span>
+                <span class="amber">CULTURE</span><span class="manifesto-dot">◈</span>
+                <span>CHAOS</span><span class="manifesto-dot">◈</span>
+                <span class="pink">DELIRAT</span><span class="manifesto-dot">◈</span>
+                <span class="dim">01.08.2026</span><span class="manifesto-dot">◈</span>
+                <span class="pink">SOUND</span><span class="manifesto-dot">◈</span>
+                <span class="amber">CULTURE</span><span class="manifesto-dot">◈</span>
+                <span>CHAOS</span><span class="manifesto-dot">◈</span>
+                <span class="pink">DELIRAT</span><span class="manifesto-dot">◈</span>
+                <span class="dim">01.08.2026</span><span class="manifesto-dot">◈</span>
             </div>
-            <div class="artist-card" data-tilt data-reveal>
-                <div class="artist-num">ARTIST 02</div>
-                <div class="artist-name tba">ÎN CURÂND</div>
-                <div class="artist-tag"><span class="pink">MANELE</span> · LOCAL</div>
+        </div>
+    </section>
+
+    <!-- === LINEUP (horizontal scroll pin) === -->
+    <section class="lineup-section" id="lineup">
+        <div class="lineup-header">
+            <div class="section-label" data-reveal>02 — LINEUP</div>
+            <h2 class="section-title" data-reveal>
+                <span class="amber">LINEUP</span><br>
+                <span class="dim">ÎN CURÂND</span>
+            </h2>
+            <p class="section-text" data-reveal>
+                Doi artiști locali, sunet trap / manele. Numele soon pe @delirat.events.
+            </p>
+        </div>
+        <div class="lineup-pin" id="lineupPin">
+            <div class="lineup-track" id="lineupTrack">
+                <div class="artist-card" data-tilt>
+                    <div class="artist-num">ARTIST 01</div>
+                    <div>
+                        <div class="artist-name tba">ÎN CURÂND</div>
+                        <div class="artist-tag" style="margin-top:0.6rem;"><span class="pink">TRAP</span> · LOCAL</div>
+                    </div>
+                </div>
+                <div class="artist-card" data-tilt>
+                    <div class="artist-num">ARTIST 02</div>
+                    <div>
+                        <div class="artist-name tba">ÎN CURÂND</div>
+                        <div class="artist-tag" style="margin-top:0.6rem;"><span class="pink">MANELE</span> · LOCAL</div>
+                    </div>
+                </div>
+                <div class="artist-card" data-tilt>
+                    <div class="artist-num">+ MAI MULTE</div>
+                    <div>
+                        <div class="artist-name tba">ÎN CURÂND</div>
+                        <div class="artist-tag" style="margin-top:0.6rem;">LINEUP COMPLET SOON</div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -933,7 +1035,7 @@
     </footer>
 
     <script>
-        // === COUNTDOWN (runs immediately, no deps) ===
+        // === COUNTDOWN ===
         const target = new Date('2026-08-01T21:00:00+03:00').getTime();
         function update() {
             const now = Date.now();
@@ -956,7 +1058,7 @@
         update();
         setInterval(update, 1000);
 
-        // === SCROLL PROGRESS (vanilla, no deps) ===
+        // === SCROLL PROGRESS ===
         const scrollProgress = document.getElementById('scrollProgress');
         window.addEventListener('scroll', () => {
             const scrolled = window.scrollY;
@@ -965,15 +1067,150 @@
             scrollProgress.style.width = pct + '%';
         }, { passive: true });
 
+        // === SPLIT TEXT (wordmark) ===
+        const wordmarkText = document.getElementById('wordmarkText');
+        const text = wordmarkText.textContent;
+        wordmarkText.innerHTML = '';
+        [...text].forEach(char => {
+            const span = document.createElement('span');
+            span.className = 'char';
+            span.textContent = char;
+            span.setAttribute('data-char', char);
+            wordmarkText.appendChild(span);
+        });
+
+        // === HERO CANVAS: FLOW FIELD ===
+        const canvas = document.getElementById('heroCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouseX = -1000, mouseY = -1000;
+        let canvasW = 0, canvasH = 0;
+        let animationFrame = null;
+
+        function resizeCanvas() {
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvasW = window.innerWidth;
+            canvasH = window.innerHeight;
+            canvas.width = canvasW * dpr;
+            canvas.height = canvasH * dpr;
+            canvas.style.width = canvasW + 'px';
+            canvas.style.height = canvasH + 'px';
+            ctx.scale(dpr, dpr);
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.min(80, Math.floor(canvasW * canvasH / 18000));
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvasW,
+                    y: Math.random() * canvasH,
+                    vx: (Math.random() - 0.5) * 0.3,
+                    vy: (Math.random() - 0.5) * 0.3,
+                    size: Math.random() * 1.5 + 0.5,
+                    hue: Math.random() < 0.5 ? 330 : 25, // fuchsia or amber
+                    alpha: Math.random() * 0.4 + 0.1
+                });
+            }
+        }
+
+        // Simple noise approximation (not full Perlin — lightweight)
+        function noise(x, y, t) {
+            return Math.sin(x * 0.01 + t) * Math.cos(y * 0.01 + t * 0.7) * 0.5 + 0.5;
+        }
+
+        let flowTime = 0;
+        function animateFlow() {
+            flowTime += 0.003;
+            ctx.clearRect(0, 0, canvasW, canvasH);
+
+            particles.forEach(p => {
+                // Flow field force
+                const angle = noise(p.x, p.y, flowTime) * Math.PI * 4;
+                p.vx += Math.cos(angle) * 0.05;
+                p.vy += Math.sin(angle) * 0.05;
+
+                // Mouse repulsion
+                const dx = p.x - mouseX;
+                const dy = p.y - mouseY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 150) {
+                    const force = (150 - dist) / 150;
+                    p.vx += (dx / dist) * force * 0.5;
+                    p.vy += (dy / dist) * force * 0.5;
+                }
+
+                // Damping
+                p.vx *= 0.95;
+                p.vy *= 0.95;
+
+                // Speed limit
+                const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                if (speed > 2) {
+                    p.vx = (p.vx / speed) * 2;
+                    p.vy = (p.vy / speed) * 2;
+                }
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                // Wrap edges
+                if (p.x < 0) p.x = canvasW;
+                if (p.x > canvasW) p.x = 0;
+                if (p.y < 0) p.y = canvasH;
+                if (p.y > canvasH) p.y = 0;
+
+                // Draw
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${p.hue}, 100%, 60%, ${p.alpha})`;
+                ctx.fill();
+            });
+
+            // Draw connections
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        const alpha = (1 - dist / 120) * 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(255, 45, 149, ${alpha})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            animationFrame = requestAnimationFrame(animateFlow);
+        }
+
+        resizeCanvas();
+        initParticles();
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+
+        // Start flow animation immediately (not waiting for GSAP)
+        animateFlow();
+
         // === GSAP INIT ===
         window.addEventListener('load', () => {
-            // BUGFIX #1: If GSAP failed to load, show everything and bail
             if (typeof gsap === 'undefined') {
                 document.getElementById('preloader').style.display = 'none';
                 return;
             }
 
-            // BUGFIX #2: Only register ScrollTrigger if it exists
             const hasScrollTrigger = typeof ScrollTrigger !== 'undefined';
             if (hasScrollTrigger) {
                 gsap.registerPlugin(ScrollTrigger);
@@ -983,7 +1220,6 @@
             const isDesktop = window.innerWidth > 768;
             const canAnimate = !prefersReducedMotion;
 
-            // Mark body as GSAP-ready (enables custom cursor, hides system cursor)
             if (canAnimate && isDesktop) {
                 document.body.classList.add('gsap-ready');
             }
@@ -1006,9 +1242,9 @@
                 const heroTl = gsap.timeline({ defaults: { ease: 'expo.out' } });
                 heroTl
                     .from('#heroTag', { y: 30, opacity: 0, duration: 0.8 }, 1.4)
-                    .from('#wordmark', { y: 80, opacity: 0, duration: 1.4, scale: 0.9, filter: 'blur(20px)' }, 1.6)
-                    .from('#countdown', { y: 30, opacity: 0, duration: 0.9 }, 2.2)
-                    .from('#scrollCue', { y: 20, opacity: 0, duration: 0.6 }, 2.6);
+                    .from('.char', { y: 100, opacity: 0, rotateX: -90, duration: 1.2, stagger: 0.08 }, 1.6)
+                    .from('#countdown', { y: 30, opacity: 0, duration: 0.9 }, 2.8)
+                    .from('#scrollCue', { y: 20, opacity: 0, duration: 0.6 }, 3.2);
             }
 
             // === SCROLL REVEALS ===
@@ -1021,13 +1257,64 @@
                 });
             }
 
+            // === MANIFESTO HORIZONTAL SCROLL ===
+            if (canAnimate && hasScrollTrigger && isDesktop) {
+                const manifestoText = document.getElementById('manifestoText');
+                const manifestoPin = document.getElementById('manifestoPin');
+                const scrollDistance = manifestoText.scrollWidth - window.innerWidth;
+
+                gsap.to(manifestoText, {
+                    x: -scrollDistance,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: '#manifesto',
+                        start: 'top top',
+                        end: () => `+=${scrollDistance + 200}`,
+                        scrub: 1,
+                        pin: manifestoPin,
+                        anticipatePin: 1,
+                        invalidateOnRefresh: true
+                    }
+                });
+            }
+
+            // === LINEUP HORIZONTAL SCROLL ===
+            if (canAnimate && hasScrollTrigger && isDesktop) {
+                const lineupTrack = document.getElementById('lineupTrack');
+                const lineupPin = document.getElementById('lineupPin');
+                const scrollDistance = lineupTrack.scrollWidth - window.innerWidth + 160;
+
+                gsap.to(lineupTrack, {
+                    x: -scrollDistance,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: '#lineup',
+                        start: 'top top',
+                        end: () => `+=${scrollDistance + 200}`,
+                        scrub: 1,
+                        pin: lineupPin,
+                        anticipatePin: 1,
+                        invalidateOnRefresh: true
+                    }
+                });
+            }
+
+            // === STOP CANVAS WHEN HERO OFFSCREEN ===
+            if (hasScrollTrigger) {
+                ScrollTrigger.create({
+                    trigger: '.hero',
+                    start: 'bottom top',
+                    onEnter: () => { if (animationFrame) { cancelAnimationFrame(animationFrame); animationFrame = null; } },
+                    onEnterBack: () => { if (!animationFrame) animateFlow(); }
+                });
+            }
+
             // === CUSTOM CURSOR ===
             if (canAnimate && isDesktop) {
                 const dot = document.getElementById('cursorDot');
                 const ring = document.getElementById('cursorRing');
                 let mx = 0, my = 0, rx = 0, ry = 0;
 
-                // BUGFIX #3: Use gsap.quickTo for dot (no tween stacking)
                 const dotX = gsap.quickTo(dot, 'x', { duration: 0.1, ease: 'power2.out' });
                 const dotY = gsap.quickTo(dot, 'y', { duration: 0.1, ease: 'power2.out' });
 
@@ -1036,7 +1323,6 @@
                     dotX(mx); dotY(my);
                 });
 
-                // BUGFIX #4: Dynamic ring offset based on actual size
                 gsap.ticker.add(() => {
                     rx += (mx - rx) * 0.12;
                     ry += (my - ry) * 0.12;
@@ -1045,7 +1331,6 @@
                     ring.style.transform = `translate(${rx - offset}px, ${ry - offset}px)`;
                 });
 
-                // Hover state on interactive elements
                 document.querySelectorAll('a, .btn, .artist-card, .ticket-card, .info-row').forEach(el => {
                     el.addEventListener('mouseenter', () => ring.classList.add('hover'));
                     el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
@@ -1053,7 +1338,6 @@
             }
 
             // === MOUSE PARALLAX ON GLOWS ===
-            // BUGFIX #5: Use quickTo to prevent tween stacking
             if (canAnimate) {
                 const glowFuchsiaX = gsap.quickTo('#glowFuchsia', 'x', { duration: 1.5, ease: 'power2.out' });
                 const glowFuchsiaY = gsap.quickTo('#glowFuchsia', 'y', { duration: 1.5, ease: 'power2.out' });
@@ -1111,9 +1395,6 @@
                     });
                 });
             }
-
-            // === INFO ROW INDENT (CSS handles hover, GSAP not needed) ===
-            // BUGFIX #7: Removed GSAP padding animation — CSS :hover handles it now
         });
     </script>
 </body>
