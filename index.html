@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DELIRAT · 01.08.2026 · Târgu Mureș</title>
-    <meta name="description" content="DELIRAT — sound · culture · chaos · 01.08.2026 · Târgu Mureș. Trap / manele night. Bilete în curând.">
+    <meta name="description" content="DELIRAT — sound · culture · chaos · 01.08.2026 · Târgu Mureș. Trap / manele night.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' fill='%23FF2D95'>◈</text></svg>">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -20,18 +24,26 @@
             --fuchsia: #FF2D95;
             --amber: #FF8C42;
             --white: #F5F5F5;
-            --muted: rgba(245,245,245,0.4);
+            --muted: rgba(245,245,245,0.45);
             --dim: rgba(245,245,245,0.2);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        html, body {
+        html { scroll-behavior: smooth; }
+
+        body {
             min-height: 100vh;
             background: var(--black);
             color: var(--white);
             font-family: 'Space Mono', monospace;
             overflow-x: hidden;
-            scroll-behavior: smooth;
+            cursor: none;
         }
+
+        @media (max-width: 768px) { body { cursor: auto; } }
+
+        ::selection { background: var(--fuchsia); color: var(--black); }
 
         /* === GRAIN === */
         body::before {
@@ -39,86 +51,166 @@
             position: fixed;
             inset: 0;
             pointer-events: none;
-            z-index: 200;
-            opacity: 0.06;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 250 250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' /%3E%3C/svg%3E");
+            z-index: 300;
+            opacity: 0.08;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' /%3E%3C/svg%3E");
+            animation: grainShift 0.5s steps(6) infinite;
+        }
+        @keyframes grainShift {
+            0% { transform: translate(0,0); }
+            20% { transform: translate(-2px,1px); }
+            40% { transform: translate(1px,-1px); }
+            60% { transform: translate(-1px,2px); }
+            80% { transform: translate(2px,-2px); }
+            100% { transform: translate(0,0); }
         }
 
-        /* === HALFTONE OVERLAY === */
+        /* === HALFTONE === */
         body::after {
             content: '';
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 1;
-            opacity: 0.03;
+            opacity: 0.025;
             background-image: radial-gradient(circle, var(--fuchsia) 1px, transparent 1.5px);
-            background-size: 8px 8px;
+            background-size: 6px 6px;
         }
 
-        /* === COLOR BLOCKS === */
-        .block-violet {
-            position: absolute;
-            top: 8%;
-            left: -5%;
-            width: 40vw;
-            height: 24vh;
-            background: var(--violet);
-            opacity: 0.18;
-            transform: rotate(-3deg);
-            z-index: 2;
-            mix-blend-mode: screen;
-        }
-        .block-fuchsia {
-            position: absolute;
-            top: 45%;
-            right: -8%;
-            width: 35vw;
-            height: 20vh;
-            background: var(--fuchsia);
-            opacity: 0.08;
-            transform: rotate(4deg);
-            z-index: 2;
-            mix-blend-mode: screen;
-        }
-        .block-amber {
-            position: absolute;
-            bottom: 5%;
-            left: 10%;
-            width: 25vw;
-            height: 15vh;
-            background: var(--amber);
-            opacity: 0.06;
-            transform: rotate(-6deg);
-            z-index: 2;
-            mix-blend-mode: screen;
-        }
-
-        /* === HALFTONE STRIP === */
-        .halftone-strip {
+        /* === CUSTOM CURSOR === */
+        .cursor-dot, .cursor-ring {
             position: fixed;
-            top: 0;
-            right: 0;
-            width: 30vw;
-            height: 100vh;
-            z-index: 3;
-            opacity: 0.04;
-            background: repeating-linear-gradient(135deg, var(--fuchsia) 0, var(--fuchsia) 1px, transparent 1px, transparent 6px);
+            top: 0; left: 0;
             pointer-events: none;
+            z-index: 9999;
+            border-radius: 50%;
+            mix-blend-mode: difference;
+        }
+        .cursor-dot {
+            width: 6px; height: 6px;
+            background: var(--fuchsia);
+            transition: transform 0.15s ease;
+        }
+        .cursor-ring {
+            width: 36px; height: 36px;
+            border: 1px solid var(--white);
+            transition: transform 0.25s var(--ease-out-expo), width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+        }
+        .cursor-ring.hover {
+            width: 60px; height: 60px;
+            border-color: var(--fuchsia);
+        }
+        @media (max-width: 768px) { .cursor-dot, .cursor-ring { display: none; } }
+
+        /* === PRELOADER === */
+        .preloader {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: var(--black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .preloader-text {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(2rem, 8vw, 5rem);
+            text-transform: uppercase;
+            letter-spacing: -0.03em;
+            color: var(--white);
+            position: relative;
+        }
+        .preloader-text::before,
+        .preloader-text::after {
+            content: 'DELIRAT';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+        }
+        .preloader-text::before {
+            color: var(--fuchsia);
+            transform: translate(-3px, 0);
+            opacity: 0.5;
+            clip-path: inset(0 0 50% 0);
+        }
+        .preloader-text::after {
+            color: var(--amber);
+            transform: translate(3px, 0);
+            opacity: 0.4;
+            clip-path: inset(50% 0 0 0);
+        }
+        .preloader-bar {
+            width: 200px;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        .preloader-bar::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, var(--fuchsia), transparent);
+            animation: shimmer 1s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        /* === AMBIENT GLOWS === */
+        .glow {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+            will-change: transform;
+        }
+        .glow-fuchsia {
+            top: 20%; right: -10%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(255,45,149,0.12), transparent 70%);
+        }
+        .glow-amber {
+            bottom: 10%; left: -5%;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255,140,66,0.08), transparent 70%);
+        }
+        .glow-violet {
+            top: 50%; left: 30%;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(45,27,78,0.15), transparent 70%);
         }
 
         /* === TEAR EDGE === */
         .tear-top {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
             z-index: 50;
             background: var(--fuchsia);
             opacity: 0.4;
             clip-path: polygon(0 0, 5% 100%, 10% 0, 15% 100%, 20% 0, 25% 100%, 30% 0, 35% 100%, 40% 0, 45% 100%, 50% 0, 55% 100%, 60% 0, 65% 100%, 70% 0, 75% 100%, 80% 0, 85% 100%, 90% 0, 95% 100%, 100% 0);
         }
+
+        /* === CORNER LABELS === */
+        .corner {
+            position: fixed;
+            z-index: 60;
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(0.5rem, 1vw, 0.62rem);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+        .corner-tl { top: 1.5rem; left: 1.5rem; }
+        .corner-tr { top: 1.5rem; right: 1.5rem; text-align: right; color: var(--fuchsia); opacity: 0.6; }
+        .corner-br { bottom: 1.5rem; right: 1.5rem; text-align: right; }
+        @media (max-width: 700px) { .corner-tl, .corner-br { display: none; } }
 
         /* === LAYOUT === */
         .container {
@@ -129,25 +221,6 @@
             padding: 0 2rem;
         }
 
-        /* === CORNER LABELS === */
-        .corner {
-            position: fixed;
-            z-index: 60;
-            font-family: 'Space Mono', monospace;
-            font-size: clamp(0.5rem, 1.1vw, 0.65rem);
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--dim);
-        }
-        .corner-tl { top: 1.5rem; left: 1.5rem; }
-        .corner-tr { top: 1.5rem; right: 1.5rem; text-align: right; color: var(--fuchsia); opacity: 0.6; }
-        .corner-br { bottom: 1.5rem; right: 1.5rem; text-align: right; }
-
-        @media (max-width: 700px) {
-            .corner-tl, .corner-br { font-size: 0.45rem; }
-            .corner-tr { font-size: 0.5rem; }
-        }
-
         /* === HERO === */
         .hero {
             min-height: 100vh;
@@ -156,60 +229,82 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 4rem 2rem 2rem;
+            padding: 5rem 2rem 3rem;
         }
 
-        .logo-stack {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 2rem;
-        }
-        .logo-layer {
-            font-family: 'Archivo Black', sans-serif;
-            font-size: clamp(3.5rem, 18vw, 12rem);
-            letter-spacing: -0.03em;
-            line-height: 0.85;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-        .logo-amber {
-            color: var(--amber);
-            opacity: 0.2;
-            transform: translate(-6px, -6px);
-            position: absolute;
-            top: 0; left: 0;
-        }
-        .logo-fuchsia {
-            color: var(--fuchsia);
-            opacity: 0.35;
-            transform: translate(5px, 5px);
-            position: absolute;
-            top: 0; left: 0;
-            animation: shift 4s ease-in-out infinite;
-        }
-        .logo-white { color: var(--white); position: relative; }
-        @keyframes shift {
-            0%, 100% { transform: translate(5px, 5px); opacity: 0.35; }
-            50% { transform: translate(8px, 3px); opacity: 0.5; }
-        }
-
-        .hero-tagline {
+        .hero-tag {
             font-family: 'Space Mono', monospace;
-            font-size: clamp(0.6rem, 1.4vw, 0.75rem);
+            font-size: clamp(0.55rem, 1.2vw, 0.7rem);
             letter-spacing: 0.4em;
             text-transform: uppercase;
             color: var(--muted);
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             text-align: center;
+            opacity: 0;
         }
-        .hero-tagline .pink { color: var(--fuchsia); }
-        .hero-tagline .amber { color: var(--amber); }
+        .hero-tag .pink { color: var(--fuchsia); }
+        .hero-tag .amber { color: var(--amber); }
+
+        /* === GLITCH WORDMARK === */
+        .wordmark {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2.5rem;
+        }
+        .wordmark-text {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(3.5rem, 18vw, 13rem);
+            letter-spacing: -0.04em;
+            line-height: 0.82;
+            text-transform: uppercase;
+            white-space: nowrap;
+            color: var(--white);
+            position: relative;
+            z-index: 2;
+        }
+        .wordmark-text::before,
+        .wordmark-text::after {
+            content: 'DELIRAT';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .wordmark-text::before {
+            color: var(--fuchsia);
+            transform: translate(-4px, -2px);
+            opacity: 0.4;
+            z-index: 1;
+            animation: glitch1 3s infinite;
+        }
+        .wordmark-text::after {
+            color: var(--amber);
+            transform: translate(4px, 2px);
+            opacity: 0.3;
+            z-index: 0;
+            animation: glitch2 3.5s infinite;
+        }
+        @keyframes glitch1 {
+            0%, 92%, 100% { transform: translate(-4px, -2px); opacity: 0.4; }
+            93% { transform: translate(-8px, 1px); opacity: 0.6; }
+            94% { transform: translate(-2px, -3px); opacity: 0.3; }
+            95% { transform: translate(-6px, 0px); opacity: 0.5; }
+            96% { transform: translate(-4px, -2px); opacity: 0.4; }
+        }
+        @keyframes glitch2 {
+            0%, 90%, 100% { transform: translate(4px, 2px); opacity: 0.3; }
+            91% { transform: translate(8px, -1px); opacity: 0.5; }
+            92% { transform: translate(2px, 3px); opacity: 0.2; }
+            93% { transform: translate(6px, 0px); opacity: 0.4; }
+            94% { transform: translate(4px, 2px); opacity: 0.3; }
+        }
 
         /* === COUNTDOWN === */
         .countdown {
             display: flex;
-            gap: clamp(1rem, 4vw, 3rem);
+            gap: clamp(0.8rem, 3.5vw, 2.5rem);
             margin-bottom: 2rem;
+            opacity: 0;
         }
         .cd-unit {
             display: flex;
@@ -220,7 +315,7 @@
         .cd-unit::after {
             content: '';
             position: absolute;
-            bottom: -0.5rem;
+            bottom: -0.4rem;
             left: 50%;
             transform: translateX(-50%);
             width: 60%;
@@ -230,7 +325,7 @@
         }
         .cd-num {
             font-family: 'Archivo Black', sans-serif;
-            font-size: clamp(2.2rem, 7vw, 4.5rem);
+            font-size: clamp(2rem, 6.5vw, 4.5rem);
             line-height: 0.9;
             color: var(--white);
         }
@@ -238,46 +333,68 @@
         .cd-num.amber { color: var(--amber); }
         .cd-label {
             font-family: 'Space Mono', monospace;
-            font-size: clamp(0.4rem, 0.9vw, 0.55rem);
+            font-size: clamp(0.4rem, 0.85vw, 0.55rem);
             letter-spacing: 0.2em;
             text-transform: uppercase;
             color: var(--dim);
-            margin-top: 0.8rem;
+            margin-top: 0.7rem;
         }
 
-        /* === SCROLL CUE === */
         .scroll-cue {
             font-family: 'Space Mono', monospace;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             letter-spacing: 0.3em;
             text-transform: uppercase;
             color: var(--dim);
             opacity: 0;
-            animation: fadeUp 1s ease forwards 1.6s;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-        .scroll-cue::after {
-            content: '↓';
-            animation: bob 1.8s ease-in-out infinite;
-        }
-        @keyframes bob {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(4px); }
-        }
+        .scroll-cue::after { content: '↓'; animation: bob 1.8s ease-in-out infinite; }
+        @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 
-        /* === SECTION === */
-        section {
+        /* === MARQUEE === */
+        .marquee {
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 1.5rem 0;
+            border-top: 1px solid rgba(255,45,149,0.1);
+            border-bottom: 1px solid rgba(255,45,149,0.1);
+            background: rgba(45,27,78,0.1);
             position: relative;
             z-index: 10;
-            padding: 6rem 0;
         }
-        @media (min-width: 768px) { section { padding: 8rem 0; } }
+        .marquee-track {
+            display: inline-flex;
+            animation: marquee 20s linear infinite;
+            gap: 3rem;
+        }
+        .marquee-item {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(1.2rem, 3.5vw, 2.2rem);
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            color: var(--white);
+        }
+        .marquee-item.pink { color: var(--fuchsia); }
+        .marquee-item.amber { color: var(--amber); }
+        .marquee-dot {
+            color: var(--fuchsia);
+            font-size: clamp(1.2rem, 3.5vw, 2.2rem);
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* === SECTIONS === */
+        section { position: relative; z-index: 10; padding: 7rem 0; }
+        @media (min-width: 768px) { section { padding: 9rem 0; } }
 
         .section-label {
             font-family: 'Space Mono', monospace;
-            font-size: clamp(0.55rem, 1.2vw, 0.7rem);
+            font-size: clamp(0.55rem, 1.1vw, 0.68rem);
             letter-spacing: 0.3em;
             text-transform: uppercase;
             color: var(--fuchsia);
@@ -296,9 +413,9 @@
 
         .section-title {
             font-family: 'Archivo Black', sans-serif;
-            font-size: clamp(2rem, 6vw, 4rem);
-            line-height: 0.9;
-            letter-spacing: -0.02em;
+            font-size: clamp(2.2rem, 7vw, 5rem);
+            line-height: 0.88;
+            letter-spacing: -0.03em;
             text-transform: uppercase;
             margin-bottom: 2rem;
         }
@@ -308,11 +425,51 @@
 
         .section-text {
             font-family: 'Space Mono', monospace;
-            font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+            font-size: clamp(0.78rem, 1.4vw, 0.92rem);
             line-height: 1.7;
             color: var(--muted);
-            max-width: 560px;
+            max-width: 580px;
         }
+
+        /* === INFO ROWS (editorial, not cards) === */
+        .info-rows {
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .info-row {
+            display: grid;
+            grid-template-columns: 120px 1fr auto;
+            align-items: center;
+            padding: 1.8rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            transition: padding-left 0.4s var(--ease-out-expo);
+        }
+        .info-row:hover { padding-left: 1rem; }
+        @media (max-width: 600px) {
+            .info-row { grid-template-columns: 1fr; gap: 0.5rem; }
+        }
+        .info-row-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+        .info-row-value {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(1.3rem, 3vw, 2rem);
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+        .info-row-value.pink { color: var(--fuchsia); }
+        .info-row-value.amber { color: var(--amber); }
+        .info-row-sub {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--muted);
+            text-align: right;
+        }
+        @media (max-width: 600px) { .info-row-sub { text-align: left; } }
 
         /* === LINEUP === */
         .lineup {
@@ -321,49 +478,51 @@
             gap: 1.5rem;
             margin-top: 3rem;
         }
-        @media (min-width: 768px) {
-            .lineup { grid-template-columns: 1fr 1fr; gap: 2rem; }
-        }
+        @media (min-width: 768px) { .lineup { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+
         .artist-card {
             position: relative;
-            padding: 2.5rem 2rem;
-            border: 1px solid rgba(255,45,149,0.15);
-            background: rgba(45,27,78,0.15);
+            padding: 3rem 2rem;
+            border: 1px solid rgba(255,45,149,0.12);
+            background: rgba(45,27,78,0.12);
             overflow: hidden;
-            transition: border-color 0.4s ease, transform 0.4s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: border-color 0.4s ease;
+            will-change: transform;
         }
-        .artist-card:hover {
-            border-color: var(--fuchsia);
-            transform: translateY(-4px);
-        }
+        .artist-card:hover { border-color: var(--fuchsia); }
         .artist-card::before {
             content: '';
             position: absolute;
             top: 0; left: 0;
-            width: 100%;
-            height: 2px;
+            width: 100%; height: 2px;
             background: linear-gradient(90deg, transparent, var(--fuchsia), transparent);
             opacity: 0.4;
+        }
+        .artist-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; right: 0;
+            width: 60px; height: 60px;
+            background: radial-gradient(circle at bottom right, rgba(255,45,149,0.08), transparent 70%);
         }
         .artist-num {
             font-family: 'Space Mono', monospace;
             font-size: 0.6rem;
             letter-spacing: 0.3em;
             color: var(--amber);
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
         }
         .artist-name {
             font-family: 'Archivo Black', sans-serif;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-size: clamp(1.8rem, 4.5vw, 3rem);
             text-transform: uppercase;
             letter-spacing: -0.02em;
             line-height: 1;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
         }
-        .artist-name.tba {
-            color: var(--dim);
-            font-size: clamp(1.2rem, 3vw, 1.8rem);
-        }
+        .artist-name.tba { color: var(--dim); font-size: clamp(1.4rem, 3.5vw, 2rem); }
         .artist-tag {
             font-family: 'Space Mono', monospace;
             font-size: 0.65rem;
@@ -373,72 +532,28 @@
         }
         .artist-tag .pink { color: var(--fuchsia); }
 
-        /* === INFO GRID === */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-top: 3rem;
-        }
-        @media (min-width: 768px) {
-            .info-grid { grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-        }
-        .info-card {
-            padding: 2rem 1.5rem;
-            border-left: 2px solid var(--fuchsia);
-            background: rgba(10,10,10,0.6);
-        }
-        .info-card.amber { border-left-color: var(--amber); }
-        .info-card.violet { border-left-color: var(--violet); border-left-width: 2px; opacity: 1; }
-        .info-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.55rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: var(--dim);
-            margin-bottom: 0.75rem;
-        }
-        .info-value {
-            font-family: 'Archivo Black', sans-serif;
-            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-            text-transform: uppercase;
-            line-height: 1.1;
-            margin-bottom: 0.5rem;
-        }
-        .info-value.pink { color: var(--fuchsia); }
-        .info-value.amber { color: var(--amber); }
-        .info-sub {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--muted);
-            line-height: 1.5;
-        }
-
         /* === TICKETS === */
         .tickets {
             display: grid;
             grid-template-columns: 1fr;
             gap: 1.5rem;
             margin-top: 3rem;
-            max-width: 700px;
+            max-width: 720px;
         }
-        @media (min-width: 768px) {
-            .tickets { grid-template-columns: 1fr 1fr; }
-        }
+        @media (min-width: 768px) { .tickets { grid-template-columns: 1fr 1fr; } }
+
         .ticket-card {
             position: relative;
-            padding: 2.5rem 2rem;
-            border: 1px solid rgba(255,140,66,0.2);
-            background: rgba(10,10,10,0.7);
-            transition: border-color 0.4s ease, transform 0.4s ease;
+            padding: 3rem 2.5rem;
+            border: 1px solid rgba(255,140,66,0.15);
+            background: rgba(10,10,10,0.6);
+            transition: border-color 0.4s ease, transform 0.4s var(--ease-out-expo);
+            will-change: transform;
         }
-        .ticket-card:hover {
-            border-color: var(--amber);
-            transform: translateY(-3px);
-        }
+        .ticket-card:hover { border-color: var(--amber); }
         .ticket-card.featured {
             border-color: var(--fuchsia);
-            background: rgba(45,27,78,0.25);
+            background: rgba(45,27,78,0.2);
         }
         .ticket-tier {
             font-family: 'Space Mono', monospace;
@@ -446,12 +561,12 @@
             letter-spacing: 0.3em;
             text-transform: uppercase;
             color: var(--amber);
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
         }
         .ticket-card.featured .ticket-tier { color: var(--fuchsia); }
         .ticket-price {
             font-family: 'Archivo Black', sans-serif;
-            font-size: clamp(2.5rem, 7vw, 4rem);
+            font-size: clamp(2.8rem, 8vw, 5rem);
             line-height: 1;
             margin-bottom: 0.5rem;
         }
@@ -472,35 +587,36 @@
         }
         .ticket-badge {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
+            top: 1.2rem; right: 1.2rem;
             font-family: 'Space Mono', monospace;
             font-size: 0.5rem;
             letter-spacing: 0.2em;
             text-transform: uppercase;
             color: var(--black);
             background: var(--fuchsia);
-            padding: 0.25rem 0.6rem;
+            padding: 0.3rem 0.7rem;
         }
 
         /* === CTA === */
         .cta-section {
             text-align: center;
-            padding: 6rem 0 8rem;
+            padding: 7rem 0 9rem;
         }
         .cta-title {
             font-family: 'Archivo Black', sans-serif;
-            font-size: clamp(2rem, 6vw, 4rem);
+            font-size: clamp(2.5rem, 8vw, 6rem);
             text-transform: uppercase;
-            line-height: 0.9;
+            line-height: 0.85;
+            letter-spacing: -0.03em;
             margin-bottom: 1.5rem;
         }
         .cta-title .pink { color: var(--fuchsia); }
+        .cta-title .dim { color: var(--dim); }
         .cta-sub {
             font-family: 'Space Mono', monospace;
-            font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+            font-size: clamp(0.65rem, 1.3vw, 0.8rem);
             color: var(--muted);
-            letter-spacing: 0.15em;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
             margin-bottom: 3rem;
         }
@@ -510,22 +626,22 @@
             gap: 1rem;
             align-items: center;
         }
-        @media (min-width: 600px) {
-            .cta-buttons { flex-direction: row; justify-content: center; }
-        }
+        @media (min-width: 600px) { .cta-buttons { flex-direction: row; justify-content: center; } }
+
         .btn {
             font-family: 'Space Mono', monospace;
             font-size: 0.7rem;
             font-weight: 700;
             letter-spacing: 0.25em;
             text-transform: uppercase;
-            padding: 1.2rem 2.5rem;
+            padding: 1.3rem 2.8rem;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 0.6rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s ease, background 0.3s ease, color 0.3s ease;
             border: 1px solid;
+            will-change: transform;
         }
         .btn-primary {
             background: var(--fuchsia);
@@ -533,8 +649,7 @@
             border-color: var(--fuchsia);
         }
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(255,45,149,0.35);
+            box-shadow: 0 8px 40px rgba(255,45,149,0.4);
         }
         .btn-secondary {
             background: transparent;
@@ -544,7 +659,6 @@
         .btn-secondary:hover {
             border-color: var(--amber);
             color: var(--amber);
-            transform: translateY(-2px);
         }
         .btn-soon {
             background: transparent;
@@ -553,52 +667,64 @@
             cursor: not-allowed;
         }
 
-        /* === REVEAL ANIMATIONS === */
-        .reveal {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+        /* === FOOTER === */
+        .footer {
+            position: relative;
+            z-index: 10;
+            padding: 3rem 0;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            text-align: center;
         }
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
+        .footer-text {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--dim);
         }
-        .reveal-d1 { transition-delay: 0.1s; }
-        .reveal-d2 { transition-delay: 0.2s; }
-        .reveal-d3 { transition-delay: 0.3s; }
-        .reveal-d4 { transition-delay: 0.4s; }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .footer-text .pink { color: var(--fuchsia); }
 
         /* === REDUCED MOTION === */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
             }
-            .reveal { opacity: 1; transform: none; }
+            .hero-tag, .countdown, .scroll-cue { opacity: 1 !important; }
+            .cursor-dot, .cursor-ring { display: none; }
+            body { cursor: auto; }
         }
 
-        /* === MOBILE === */
-        @media (max-width: 700px) {
-            .block-violet { width: 60vw; height: 18vh; }
-            .block-fuchsia { width: 50vw; height: 14vh; }
-            .block-amber { width: 50vw; height: 12vh; }
-            .halftone-strip { width: 100vw; opacity: 0.02; }
-            .corner-tl, .corner-br { display: none; }
-        }
+        /* === NOSCRIPT FALLBACK === */
+        .noscript-style + style .hero-tag,
+        .noscript-style + style .countdown,
+        .noscript-style + style .scroll-cue { opacity: 1 !important; }
+    </style>
+
+    <noscript class="noscript-style"></noscript>
+    <style>
+        .hero-tag, .countdown, .scroll-cue { opacity: 1 !important; }
     </style>
 </head>
 <body>
 
-    <!-- Background -->
-    <div class="block-violet"></div>
-    <div class="block-fuchsia"></div>
-    <div class="block-amber"></div>
-    <div class="halftone-strip"></div>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-text">DELIRAT</div>
+        <div class="preloader-bar"></div>
+    </div>
+
+    <!-- Custom cursor -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- Ambient glows -->
+    <div class="glow glow-fuchsia" id="glowFuchsia"></div>
+    <div class="glow glow-amber" id="glowAmber"></div>
+    <div class="glow glow-violet" id="glowViolet"></div>
+
+    <!-- Tear edge -->
     <div class="tear-top"></div>
 
     <!-- Corner labels -->
@@ -608,14 +734,12 @@
 
     <!-- === HERO === -->
     <section class="hero">
-        <div class="logo-stack">
-            <div class="logo-layer logo-amber">DELIRAT</div>
-            <div class="logo-layer logo-fuchsia">DELIRAT</div>
-            <div class="logo-layer logo-white">DELIRAT</div>
+        <div class="hero-tag" id="heroTag">
+            <span class="pink">SOUND</span> · <span class="amber">CULTURE</span> · CHAOS
         </div>
 
-        <div class="hero-tagline">
-            <span class="pink">SOUND</span> · <span class="amber">CULTURE</span> · CHAOS
+        <div class="wordmark" id="wordmark">
+            <div class="wordmark-text">DELIRAT</div>
         </div>
 
         <div class="countdown" id="countdown">
@@ -637,58 +761,79 @@
             </div>
         </div>
 
-        <div class="scroll-cue">SCROLL</div>
+        <div class="scroll-cue" id="scrollCue">SCROLL</div>
     </section>
 
-    <!-- === INFO === -->
-    <section class="container">
-        <div class="section-label reveal">01 — EVENIMENTUL</div>
-        <h2 class="section-title reveal reveal-d1">
+    <!-- === MARQUEE === -->
+    <div class="marquee">
+        <div class="marquee-track" id="marqueeTrack">
+            <span class="marquee-item">DELIRAT</span><span class="marquee-dot">◈</span>
+            <span class="marquee-item pink">01.08.2026</span><span class="marquee-dot">◈</span>
+            <span class="marquee-item amber">TÂRGU MUREȘ</span><span class="marquee-dot">◈</span>
+            <span class="marquee-item">TRAP / MANELE</span><span class="marquee-dot">◈</span>
+            <span class="marquee-item pink">21:00 → 04:00</span><span class="marquee-dot">◈</span>
+            <span class="marquee-item">DELIRAT</span><span class="marquee-dot">◈</span>
+            <span class="marquee-item pink">01.08.2026</span><span class="marquee-dot">◈</span>
+            <span class="marquee-item amber">TÂRGU MUREȘ</span><span class="marquee-dot">◈</span>
+            <span class="marquee-item">TRAP / MANELE</span><span class="marquee-dot">◈</span>
+            <span class="marquee-item pink">21:00 → 04:00</span><span class="marquee-dot">◈</span>
+        </div>
+    </div>
+
+    <!-- === ABOUT === -->
+    <section class="container" id="about">
+        <div class="section-label" data-reveal>01 — EVENIMENTUL</div>
+        <h2 class="section-title" data-reveal>
             O NOAPTE <span class="pink">DELIRAT</span><br>
             <span class="dim">ÎN TM</span>
         </h2>
-        <p class="section-text reveal reveal-d2">
+        <p class="section-text" data-reveal>
             Prima ediție. Trap / manele. 400 de oameni, o seară.
             Nu un festival — o noapte densă, basul nu se oprește până la 4 dimineața.
         </p>
 
-        <div class="info-grid">
-            <div class="info-card reveal reveal-d1">
-                <div class="info-label">DATA</div>
-                <div class="info-value pink">01.08.2026</div>
-                <div class="info-sub">Vineri · 21:00 → 04:00</div>
+        <div class="info-rows" data-reveal>
+            <div class="info-row">
+                <div class="info-row-label">DATA</div>
+                <div class="info-row-value pink">01.08.2026</div>
+                <div class="info-row-sub">Vineri · 21:00 → 04:00</div>
             </div>
-            <div class="info-card amber reveal reveal-d2">
-                <div class="info-label">ORAȘUL</div>
-                <div class="info-value amber">TÂRGU MUREȘ</div>
-                <div class="info-sub">Locația confirmată în curând</div>
+            <div class="info-row">
+                <div class="info-row-label">ORAȘUL</div>
+                <div class="info-row-value amber">TÂRGU MUREȘ</div>
+                <div class="info-row-sub">Locația confirmată soon</div>
             </div>
-            <div class="info-card violet reveal reveal-d3">
-                <div class="info-label">CAPACITATE</div>
-                <div class="info-value">~400</div>
-                <div class="info-sub">Locuri limitate · nu se vinde peste capacitate</div>
+            <div class="info-row">
+                <div class="info-row-label">CAPACITATE</div>
+                <div class="info-row-value">~400</div>
+                <div class="info-row-sub">Locuri limitate</div>
+            </div>
+            <div class="info-row">
+                <div class="info-row-label">GEN</div>
+                <div class="info-row-value pink">TRAP / MANELE</div>
+                <div class="info-row-sub">2 artiști locali</div>
             </div>
         </div>
     </section>
 
     <!-- === LINEUP === -->
-    <section class="container">
-        <div class="section-label reveal">02 — LINEUP</div>
-        <h2 class="section-title reveal reveal-d1">
+    <section class="container" id="lineup">
+        <div class="section-label" data-reveal>02 — LINEUP</div>
+        <h2 class="section-title" data-reveal>
             <span class="amber">LINEUP</span><br>
             <span class="dim">ÎN CURÂND</span>
         </h2>
-        <p class="section-text reveal reveal-d2">
+        <p class="section-text" data-reveal>
             Doi artiști locali, sunet trap / manele. Numele soon pe @delirat.events.
         </p>
 
         <div class="lineup">
-            <div class="artist-card reveal reveal-d1">
+            <div class="artist-card" data-tilt data-reveal>
                 <div class="artist-num">ARTIST 01</div>
                 <div class="artist-name tba">ÎN CURÂND</div>
                 <div class="artist-tag"><span class="pink">TRAP</span> · LOCAL</div>
             </div>
-            <div class="artist-card reveal reveal-d2">
+            <div class="artist-card" data-tilt data-reveal>
                 <div class="artist-num">ARTIST 02</div>
                 <div class="artist-name tba">ÎN CURÂND</div>
                 <div class="artist-tag"><span class="pink">MANELE</span> · LOCAL</div>
@@ -697,92 +842,211 @@
     </section>
 
     <!-- === TICKETS === -->
-    <section class="container">
-        <div class="section-label reveal">03 — BILETE</div>
-        <h2 class="section-title reveal reveal-d1">
+    <section class="container" id="tickets">
+        <div class="section-label" data-reveal>03 — BILETE</div>
+        <h2 class="section-title" data-reveal>
             <span class="pink">EARLY BIRD</span><br>
             <span class="dim">PRIMII 50</span>
         </h2>
-        <p class="section-text reveal reveal-d2">
-            Biletele se lansează curând prin iaBilet. Primii 50 primesc preț early bird.
+        <p class="section-text" data-reveal>
+            Biletele se lansează soon prin iaBilet. Primii 50 primesc preț early bird.
             Urmărește @delirat.events ca să prinzi link-ul primul.
         </p>
 
         <div class="tickets">
-            <div class="ticket-card featured reveal reveal-d1">
+            <div class="ticket-card featured" data-tilt data-reveal>
                 <div class="ticket-badge">LIMITAT</div>
                 <div class="ticket-tier">EARLY BIRD</div>
                 <div class="ticket-price">20<span class="currency">RON</span></div>
-                <div class="ticket-detail">Primii 50 · doar online<br>Link în curând pe @delirat.events</div>
+                <div class="ticket-detail">Primii 50 · doar online<br>Link soon pe @delirat.events</div>
             </div>
-            <div class="ticket-card reveal reveal-d2">
+            <div class="ticket-card" data-tilt data-reveal>
                 <div class="ticket-tier">STANDARD / UȘĂ</div>
                 <div class="ticket-price">35<span class="currency">RON</span></div>
-                <div class="ticket-detail">După epuizarea early bird<br>Disponibil online + la ușă</div>
+                <div class="ticket-detail">După epuizarea early bird<br>Online + la ușă</div>
             </div>
         </div>
     </section>
 
     <!-- === CTA === -->
-    <section class="container cta-section">
-        <div class="section-label reveal" style="justify-content:center;">04 — RĂMÂI CONECTAT</div>
-        <h2 class="cta-title reveal reveal-d1">
+    <section class="container cta-section" id="cta">
+        <div class="section-label" data-reveal style="justify-content:center;">04 — RĂMÂI CONECTAT</div>
+        <h2 class="cta-title" data-reveal>
             <span class="pink">BILETE</span><br>
             <span class="dim">ÎN CURÂND</span>
         </h2>
-        <p class="cta-sub reveal reveal-d2">
+        <p class="cta-sub" data-reveal>
             LINK · LINEUP · LOCAȚIE — TOTUL PE INSTAGRAM
         </p>
-        <div class="cta-buttons reveal reveal-d3">
-            <a href="https://instagram.com/delirat.events" class="btn btn-primary" target="_blank" rel="noopener">
+        <div class="cta-buttons" data-reveal>
+            <a href="https://instagram.com/delirat.events" class="btn btn-primary" target="_blank" rel="noopener" data-magnetic>
                 @DELIRAT.EVENTS ↗
             </a>
             <span class="btn btn-soon">BILETE — ÎN CURÂND</span>
         </div>
     </section>
 
+    <!-- === FOOTER === -->
+    <footer class="footer">
+        <div class="footer-text">
+            <span class="pink">◈</span> DELIRAT · 01.08.2026 · TÂRGU MUREȘ · BOOBOO SRL <span class="pink">◈</span>
+        </div>
+    </footer>
+
     <script>
         // === COUNTDOWN ===
         const target = new Date('2026-08-01T21:00:00+03:00').getTime();
-
         function update() {
             const now = Date.now();
             let diff = target - now;
-
             if (diff <= 0) {
                 ['days','hours','minutes','seconds'].forEach(id => {
                     document.getElementById(id).textContent = '00';
                 });
                 return;
             }
-
-            const days = Math.floor(diff / 86400000);
-            diff %= 86400000;
-            const hours = Math.floor(diff / 3600000);
-            diff %= 3600000;
-            const minutes = Math.floor(diff / 60000);
-            diff %= 60000;
+            const days = Math.floor(diff / 86400000); diff %= 86400000;
+            const hours = Math.floor(diff / 3600000); diff %= 3600000;
+            const minutes = Math.floor(diff / 60000); diff %= 60000;
             const seconds = Math.floor(diff / 1000);
-
             document.getElementById('days').textContent = String(days).padStart(2, '0');
             document.getElementById('hours').textContent = String(hours).padStart(2, '0');
             document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
             document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
         }
-
         update();
         setInterval(update, 1000);
 
-        // === SCROLL REVEAL ===
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        // === Wait for GSAP ===
+        window.addEventListener('load', () => {
+            if (typeof gsap === 'undefined') return; // noscript fallback already shows content
 
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            gsap.registerPlugin(ScrollTrigger);
+
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // === PRELOADER ===
+            if (!prefersReducedMotion) {
+                gsap.to('#preloader', {
+                    opacity: 0,
+                    duration: 0.6,
+                    delay: 1.2,
+                    ease: 'power2.out',
+                    onComplete: () => { document.getElementById('preloader').style.display = 'none'; }
+                });
+            } else {
+                document.getElementById('preloader').style.display = 'none';
+            }
+
+            // === HERO ENTRANCE ===
+            if (!prefersReducedMotion) {
+                const heroTl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+                heroTl
+                    .from('#heroTag', { y: 30, opacity: 0, duration: 0.8 }, 1.4)
+                    .from('#wordmark', { y: 80, opacity: 0, duration: 1.4, scale: 0.9 }, 1.6)
+                    .from('#countdown', { y: 30, opacity: 0, duration: 0.9 }, 2.2)
+                    .from('#scrollCue', { y: 20, opacity: 0, duration: 0.6 }, 2.6);
+            }
+
+            // === SCROLL REVEALS ===
+            if (!prefersReducedMotion) {
+                gsap.utils.toArray('[data-reveal]').forEach(el => {
+                    gsap.from(el, {
+                        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+                        y: 50, opacity: 0, duration: 1.1, ease: 'expo.out'
+                    });
+                });
+            }
+
+            // === CUSTOM CURSOR ===
+            if (!prefersReducedMotion && window.innerWidth > 768) {
+                const dot = document.getElementById('cursorDot');
+                const ring = document.getElementById('cursorRing');
+                let mx = 0, my = 0, rx = 0, ry = 0;
+
+                document.addEventListener('mousemove', (e) => {
+                    mx = e.clientX; my = e.clientY;
+                    gsap.to(dot, { x: mx, y: my, duration: 0.1, ease: 'power2.out' });
+                });
+
+                gsap.ticker.add(() => {
+                    rx += (mx - rx) * 0.12;
+                    ry += (my - ry) * 0.12;
+                    ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
+                });
+
+                // Hover state on interactive elements
+                document.querySelectorAll('a, .btn, .artist-card, .ticket-card, .info-row').forEach(el => {
+                    el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+                    el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+                });
+            }
+
+            // === MOUSE PARALLAX ON GLOWS ===
+            if (!prefersReducedMotion) {
+                document.addEventListener('mousemove', (e) => {
+                    const x = (e.clientX / window.innerWidth - 0.5) * 40;
+                    const y = (e.clientY / window.innerHeight - 0.5) * 40;
+                    gsap.to('#glowFuchsia', { x: x * 1.5, y: y * 1.5, duration: 1.5, ease: 'power2.out' });
+                    gsap.to('#glowAmber', { x: -x, y: -y, duration: 1.5, ease: 'power2.out' });
+                    gsap.to('#glowViolet', { x: x * 0.5, y: y * 0.5, duration: 2, ease: 'power2.out' });
+                });
+            }
+
+            // === 3D CARD TILT ===
+            if (!prefersReducedMotion && window.innerWidth > 768) {
+                document.querySelectorAll('[data-tilt]').forEach(card => {
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = (e.clientX - rect.left) / rect.width - 0.5;
+                        const y = (e.clientY - rect.top) / rect.height - 0.5;
+                        gsap.to(card, {
+                            rotateY: x * 6,
+                            rotateX: -y * 6,
+                            scale: 1.02,
+                            duration: 0.4,
+                            ease: 'power2.out',
+                            transformPerspective: 1000,
+                            overwrite: 'auto'
+                        });
+                    });
+                    card.addEventListener('mouseleave', () => {
+                        gsap.to(card, {
+                            rotateY: 0, rotateX: 0, scale: 1,
+                            duration: 0.6, ease: 'power3.out', overwrite: 'auto'
+                        });
+                    });
+                });
+            }
+
+            // === MAGNETIC BUTTONS ===
+            if (!prefersReducedMotion && window.innerWidth > 768) {
+                document.querySelectorAll('[data-magnetic]').forEach(btn => {
+                    btn.addEventListener('mousemove', (e) => {
+                        const rect = btn.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        gsap.to(btn, { x: x * 0.3, y: y * 0.3, duration: 0.3, ease: 'power2.out' });
+                    });
+                    btn.addEventListener('mouseleave', () => {
+                        gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1.2, 0.4)' });
+                    });
+                });
+            }
+
+            // === INFO ROW INDENT + COLOR ===
+            if (!prefersReducedMotion) {
+                document.querySelectorAll('.info-row').forEach(row => {
+                    const value = row.querySelector('.info-row-value');
+                    row.addEventListener('mouseenter', () => {
+                        gsap.to(row, { paddingLeft: '1.2rem', duration: 0.35, ease: 'power2.out' });
+                    });
+                    row.addEventListener('mouseleave', () => {
+                        gsap.to(row, { paddingLeft: 0, duration: 0.5, ease: 'power3.out' });
+                    });
+                });
+            }
+        });
     </script>
 </body>
 </html>
