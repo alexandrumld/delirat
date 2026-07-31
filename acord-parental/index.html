@@ -35,7 +35,7 @@
     <h1>Acord parental</h1>
     <p class="copy">Descarcă formularul, printează-l, completează-l și adu-l la intrare împreună cu actul de identitate.</p>
     <button id="downloadButton" type="button">Descarcă acordul parental</button>
-    <a class="fallback" id="fallbackLink" href="../acord-parental.pdf" download="DELIRAT-Acord-Parental-14-17.pdf">Deschide PDF-ul</a>
+    <a class="fallback" id="fallbackLink" href="../acord-parental.pdf?v=20260731-2" download="DELIRAT-Acord-Parental-14-17.pdf">Deschide PDF-ul</a>
     <div class="status" id="status" aria-live="polite"></div>
     <p class="note">1 august 2026 · 21:00-04:00<br>Little Club &amp; Lounge · Strada Sinaia 3, Târgu Mureș</p>
   </main>
@@ -43,7 +43,7 @@
     const button=document.getElementById('downloadButton');
     const status=document.getElementById('status');
     const fallback=document.getElementById('fallbackLink');
-    const pdfUrl='../acord-parental.pdf?v=20260731';
+    const pdfUrl='../acord-parental.pdf?v=20260731-2';
 
     button.addEventListener('click',async()=>{
       button.disabled=true;
