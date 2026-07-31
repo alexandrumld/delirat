@@ -8,49 +8,91 @@
   <meta name="description" content="Descarcă acordul parental pentru accesul participanților de 14-17 ani la DELIRAT.">
   <link rel="icon" href="../assets/img/delirat-logo.png" type="image/png">
   <style>
-    :root{--black:#050505;--cream:#D9C7B3;--pink:#FF0A8A;--orange:#FF8A00;--paper:#fff;--ink:#171419;--line:#D9D2CC;--soft:#F4F1EF}
-    *{box-sizing:border-box}html,body{margin:0;min-height:100%}
-    body{min-height:100svh;display:grid;place-items:center;padding:28px;background:radial-gradient(circle at 85% 10%,rgba(255,10,138,.13),transparent 28%),radial-gradient(circle at 10% 90%,rgba(107,28,255,.11),transparent 30%),var(--black);color:var(--cream);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
-    .panel{width:min(520px,100%);text-align:center}.accent{width:104px;height:3px;margin:0 auto 32px;background:linear-gradient(90deg,var(--pink) 0 68%,var(--orange) 68% 100%)}
-    .logo{width:116px;height:auto;display:block;margin:0 auto 26px;filter:drop-shadow(0 16px 28px rgba(255,10,138,.13))}.eyebrow{margin:0 0 11px;color:var(--pink);font-size:12px;font-weight:800;letter-spacing:.17em;text-transform:uppercase}
-    h1{margin:0;color:var(--cream);font-size:clamp(34px,8vw,58px);line-height:.98;letter-spacing:-.045em;text-transform:uppercase}.copy{max-width:430px;margin:22px auto 29px;color:rgba(217,199,179,.72);font-size:15px;line-height:1.6}
-    .download{width:100%;min-height:60px;border:0;border-radius:0;padding:18px 22px;background:var(--pink);color:#050505;font:inherit;font-size:14px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:transform .18s ease,background .18s ease,opacity .18s ease;box-shadow:7px 7px 0 var(--orange)}
-    .download:hover{transform:translate(-2px,-2px);background:#ff269a}.download:active{transform:translate(2px,2px)}.download:disabled{opacity:.65;cursor:wait}.note{margin:18px 0 0;color:rgba(217,199,179,.48);font-size:12px;line-height:1.55}.status{min-height:20px;margin-top:13px;color:var(--pink);font-size:12px}
-    .pdf-stage{position:fixed;left:-12000px;top:0;width:794px;height:1123px;overflow:hidden;background:#fff;color:var(--ink);font-family:Arial,Helvetica,sans-serif}.form-page{position:relative;width:794px;height:1123px;background:var(--paper)}
-    .form-header{height:142px;display:grid;grid-template-columns:96px 1fr 210px;align-items:center;gap:18px;padding:20px 46px 18px;background:#050505;color:#fff}.form-logo{width:76px;height:92px;object-fit:contain}.form-title{color:var(--cream);font-size:36px;line-height:1;font-weight:900;letter-spacing:-.03em}.form-subtitle{margin-top:10px;color:var(--pink);font-size:13px;font-weight:900;letter-spacing:.04em}.form-brand{margin-top:10px;color:#fff;font-size:12px;font-weight:800}.form-meta{text-align:right;color:#fff;font-size:12px;line-height:1.55;font-weight:800}.form-meta strong{display:block;color:var(--cream);font-size:14px}
-    .form-body{padding:27px 44px 22px}.alert{display:grid;grid-template-columns:5px 1fr;gap:13px;margin-bottom:17px;padding:13px 16px 13px 0;border-radius:8px;background:var(--soft);font-size:10.7px;line-height:1.45}.alert:before{content:"";background:var(--pink);border-radius:4px}.section{margin-top:17px}.section-title{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--line);font-size:13px;font-weight:900}.num{display:grid;place-items:center;width:19px;height:19px;border-radius:50%;background:var(--pink);color:#fff;font-size:10px}
-    .grid-two{display:grid;grid-template-columns:1.65fr .9fr;gap:20px}.grid-equal{display:grid;grid-template-columns:1.6fr .85fr;gap:20px}.field{min-height:45px}.field-label{color:#716B68;font-size:9px;font-weight:900;letter-spacing:.03em;text-transform:uppercase}.field-line{height:22px;border-bottom:1px solid #CFC7C2}.check-row{display:flex;align-items:center;gap:38px;margin-top:5px;font-size:10.5px}.check{display:inline-flex;align-items:center;gap:7px}.box{width:14px;height:14px;border:1.4px solid #171419;background:#fff}
-    .agreement{font-size:10.6px;line-height:1.42}.agreement p{margin:0 0 11px}.rules{display:grid;gap:7px;margin:0;padding:0;list-style:none}.rules li{position:relative;padding-left:18px}.rules li:before{content:"•";position:absolute;left:2px;top:-1px;color:var(--pink);font-size:17px;font-weight:900}.signature-card{margin-top:15px;padding:11px 16px 14px;border-radius:8px;background:var(--soft)}.signature-card strong{font-size:10.8px}.signature-grid{display:grid;grid-template-columns:.9fr 1.05fr 1.35fr;gap:22px;margin-top:13px}.access-grid{display:grid;grid-template-columns:1fr 1fr 1.05fr .75fr;gap:16px;align-items:end}.access-row-2{display:grid;grid-template-columns:1.35fr 1fr;gap:26px;margin-top:12px}
-    .privacy{position:absolute;left:44px;right:44px;bottom:19px;padding-top:11px;border-top:2px solid transparent;border-image:linear-gradient(90deg,var(--pink) 0 14%,var(--orange) 14% 21%,transparent 21%) 1;color:#77716E;font-size:7.3px;line-height:1.35}@media(max-width:520px){body{padding:22px}.logo{width:96px}.copy{font-size:14px}}
+    :root{--black:#050505;--cream:#D9C7B3;--pink:#FF0A8A;--orange:#FF8A00}
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--black)}
+    body{min-height:100svh;display:grid;place-items:center;padding:34px 24px;color:var(--cream);font-family:Arial,Helvetica,sans-serif}
+    main{width:min(390px,100%);text-align:center}
+    .accent{width:108px;height:4px;margin:0 auto 38px;background:linear-gradient(90deg,var(--pink) 0 68%,var(--orange) 68%)}
+    .logo{display:block;width:104px;height:120px;object-fit:contain;margin:0 auto 28px}
+    .eyebrow{margin:0 0 14px;color:var(--pink);font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+    h1{margin:0;color:var(--cream);font-size:clamp(30px,8.3vw,38px);line-height:1;letter-spacing:-.04em;white-space:nowrap;text-transform:uppercase}
+    .copy{margin:24px auto 30px;color:rgba(217,199,179,.72);font-size:15px;line-height:1.55}
+    button{width:100%;min-height:62px;border:0;border-radius:0;padding:18px 16px;background:var(--pink);box-shadow:7px 7px 0 var(--orange);color:#050505;font:inherit;font-size:14px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+    button:active{transform:translate(3px,3px);box-shadow:4px 4px 0 var(--orange)}
+    button:disabled{opacity:.7;cursor:wait}
+    .status{min-height:20px;margin-top:18px;color:var(--pink);font-size:13px;line-height:1.4}
+    .note{margin:22px 0 0;color:rgba(217,199,179,.42);font-size:12px;line-height:1.55}
+    @media(max-width:360px){body{padding-inline:18px}h1{font-size:29px}.copy{font-size:14px}}
   </style>
 </head>
 <body>
-  <main class="panel">
+  <main>
     <div class="accent"></div>
-    <img class="logo" src="../assets/img/delirat-logo.png" alt="DELIRAT">
+    <img class="logo" id="pageLogo" src="../assets/img/delirat-logo.png" alt="Logo DELIRAT">
     <p class="eyebrow">Participanți 14-17 ani</p>
     <h1>Acord parental</h1>
     <p class="copy">Descarcă formularul, printează-l, completează-l și adu-l la intrare împreună cu actul de identitate.</p>
-    <button class="download" id="downloadButton" type="button">Descarcă acordul parental</button>
+    <button id="downloadButton" type="button">Descarcă acordul parental</button>
     <div class="status" id="status" aria-live="polite"></div>
-    <p class="note">1 august 2026, 21:00-04:00<br>Little Club &amp; Lounge, Strada Sinaia 3, Târgu Mureș</p>
+    <p class="note">1 august 2026 · 21:00-04:00<br>Little Club &amp; Lounge · Strada Sinaia 3, Târgu Mureș</p>
   </main>
-  <div class="pdf-stage" aria-hidden="true"><div class="form-page" id="parentalForm">
-    <header class="form-header"><img class="form-logo" src="../assets/img/delirat-logo.png" alt=""><div><div class="form-title">ACORD PARENTAL</div><div class="form-subtitle">ACCES PARTICIPANȚI 14-17 ANI</div><div class="form-brand">DELIRAT &nbsp;/&nbsp; EDIȚIA I</div></div><div class="form-meta"><strong>01 AUG 2026</strong><strong>21:00 - 04:00</strong>LITTLE CLUB &amp; LOUNGE<br>STR. SINAIA 3, TÂRGU MUREȘ</div></header>
-    <div class="form-body">
-      <div class="alert">Accesul se face cu bilet valabil, actul minorului în original și acordul completat. Formularul nu garantează accesul dacă regulile evenimentului sau ale locației nu sunt respectate.</div>
-      <section class="section"><div class="section-title"><span class="num">1</span> DATELE MINORULUI</div><div class="grid-two"><div class="field"><div class="field-label">Nume și prenume complet</div><div class="field-line"></div></div><div class="field"><div class="field-label">Data nașterii</div><div class="field-line"></div></div><div class="field"><div class="field-label">Telefon minor (opțional)</div><div class="field-line"></div></div><div class="field"><div class="field-label">Vârsta</div><div class="field-line"></div></div></div></section>
-      <section class="section"><div class="section-title"><span class="num">2</span> DATELE PĂRINTELUI / REPREZENTANTULUI LEGAL</div><div class="grid-equal"><div class="field"><div class="field-label">Nume și prenume complet</div><div class="field-line"></div></div><div class="field"><div class="field-label">Telefon</div><div class="field-line"></div></div></div><div class="field-label" style="margin-top:6px">Calitate</div><div class="check-row"><span class="check"><span class="box"></span>Părinte</span><span class="check"><span class="box"></span>Tutore</span><span class="check"><span class="box"></span>Alt reprezentant legal</span></div></section>
-      <section class="section agreement"><div class="section-title"><span class="num">3</span> ACORDUL</div><p>Subsemnatul/Subsemnata, în calitate de părinte sau reprezentant legal al minorului menționat mai sus, îmi exprim acordul ca acesta/aceasta să participe la evenimentul DELIRAT - Ediția I, în intervalul și la locația indicate în antet.</p><ol class="rules"><li>Am luat la cunoștință că evenimentul are loc într-un club și poate include muzică la volum ridicat, lumini dinamice/stroboscopice și aglomerație.</li><li>Înțeleg că minorului îi este strict interzis să cumpere, primească, dețină sau consume alcool, băuturi energizante, produse din tutun/nicotină ori substanțe interzise.</li><li>Am informat minorul că trebuie să respecte regulamentul și indicațiile organizatorului, securității și personalului locației; încălcarea regulilor poate duce la refuzarea accesului sau îndepărtarea din eveniment.</li><li>Voi fi disponibil(ă) la telefon pe durata participării și sunt de acord să fiu contactat(ă); într-o urgență, organizatorul poate apela serviciul 112.</li><li>Declar că informațiile completate sunt corecte și că am autoritatea legală necesară pentru semnarea prezentului acord.</li></ol><div class="signature-card"><strong>Prin semnătură confirm că am citit și accept cele de mai sus.</strong><div class="signature-grid"><div class="field"><div class="field-label">Data</div><div class="field-line"></div></div><div class="field"><div class="field-label">Numele în clar</div><div class="field-line"></div></div><div class="field"><div class="field-label">Semnătura părintelui</div><div class="field-line"></div></div></div></div></section>
-      <section class="section"><div class="section-title"><span class="num">4</span> COMPLETAT DE PERSONALUL DE ACCES</div><div class="access-grid"><span class="check"><span class="box"></span>Act minor verificat</span><span class="check"><span class="box"></span>Bilet verificat</span><span class="check"><span class="box"></span>Brățară U18 aplicată</span><div class="field"><div class="field-label">Ora intrării</div><div class="field-line"></div></div></div><div class="access-row-2"><div class="field"><div class="field-label">Nume personal acces</div><div class="field-line"></div></div><div class="field"><div class="field-label">Semnătură</div><div class="field-line"></div></div></div></section>
-    </div><div class="privacy">Protecția datelor: BOOBOO S.R.L. folosește datele exclusiv pentru verificarea accesului, contact în caz de nevoie și gestionarea siguranței evenimentului. Formularul este păstrat maximum 30 de zile după eveniment, cu excepția situațiilor în care un incident sau o obligație legală justifică păstrarea mai îndelungată. Contact: team@radu.studio / 0770 342 348.</div>
-  </div></div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
-  <script>
-    const button=document.getElementById('downloadButton'),status=document.getElementById('status'),form=document.getElementById('parentalForm');
-    const waitForImages=()=>Promise.all([...document.images].map(img=>img.complete&&img.naturalWidth?Promise.resolve():new Promise(resolve=>{img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true})})));
-    button.addEventListener('click',async()=>{button.disabled=true;status.textContent='Se pregătește PDF-ul...';try{await waitForImages();if(document.fonts&&document.fonts.ready)await document.fonts.ready;if(!window.html2canvas||!window.jspdf)throw new Error('Bibliotecile PDF nu s-au încărcat');const canvas=await html2canvas(form,{scale:2,backgroundColor:'#ffffff',useCORS:true,logging:false,width:794,height:1123,windowWidth:794,windowHeight:1123});const{jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4',compress:true});pdf.addImage(canvas.toDataURL('image/jpeg',.96),'JPEG',0,0,210,297,undefined,'FAST');const blob=pdf.output('blob'),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='DELIRAT-Acord-Parental-14-17.pdf';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);status.textContent='PDF-ul a fost descărcat.'}catch(error){console.error(error);status.textContent='Nu s-a putut genera PDF-ul. Reîncarcă pagina și încearcă din nou.'}finally{button.disabled=false}});
-  </script>
+<script>
+(() => {
+  const PINK='#FF0A8A', ORANGE='#FF8A00', CREAM='#D9C7B3', BLACK='#050505', INK='#171419', LINE='#D4CCC7', SOFT='#F4F1EF', GREY='#706A67';
+  const button=document.getElementById('downloadButton');
+  const status=document.getElementById('status');
+  const logo=document.getElementById('pageLogo');
+  const enc=new TextEncoder();
+
+  function text(ctx,value,x,y,size,weight='400',color=INK,align='left'){
+    ctx.font=`${weight} ${size}px Arial, Helvetica, sans-serif`;
+    ctx.fillStyle=color;ctx.textAlign=align;ctx.textBaseline='alphabetic';ctx.fillText(value,x,y);
+  }
+  function wrap(ctx,value,x,y,maxWidth,lineHeight,size,weight='400',color=INK){
+    ctx.font=`${weight} ${size}px Arial, Helvetica, sans-serif`;ctx.fillStyle=color;ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    const words=value.split(/\s+/);let line='',lines=[];
+    for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else line=test}
+    if(line)lines.push(line);lines.forEach((ln,i)=>ctx.fillText(ln,x,y+i*lineHeight));return y+lines.length*lineHeight;
+  }
+  function roundedRect(ctx,x,y,w,h,r,fill){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();ctx.fillStyle=fill;ctx.fill()}
+  function field(ctx,label,x,y,w){text(ctx,label.toUpperCase(),x,y,14,'700',GREY);ctx.strokeStyle=LINE;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y+25);ctx.lineTo(x+w,y+25);ctx.stroke()}
+  function checkbox(ctx,x,y,label){ctx.strokeStyle=INK;ctx.lineWidth=2;ctx.strokeRect(x,y-16,18,18);text(ctx,label,x+28,y,17,'400',INK)}
+  function section(ctx,n,title,y){ctx.fillStyle=PINK;ctx.beginPath();ctx.arc(73,y-7,16,0,Math.PI*2);ctx.fill();text(ctx,String(n),73,y-1,15,'700','#fff','center');text(ctx,title,105,y,23,'700',INK);ctx.strokeStyle=LINE;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(105,y+14);ctx.lineTo(1168,y+14);ctx.stroke();return y+46}
+  function diamondFallback(ctx,x,y,w,h){ctx.save();ctx.translate(x,y);ctx.lineJoin='round';ctx.lineWidth=8;ctx.strokeStyle='#2A1237';ctx.fillStyle=PINK;ctx.beginPath();ctx.moveTo(w*.18,h*.18);ctx.lineTo(w*.72,h*.12);ctx.lineTo(w*.92,h*.38);ctx.lineTo(w*.52,h*.9);ctx.lineTo(w*.08,h*.42);ctx.closePath();ctx.fill();ctx.stroke();ctx.strokeStyle=ORANGE;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(w*.18,h*.18);ctx.lineTo(w*.52,h*.9);ctx.moveTo(w*.72,h*.12);ctx.lineTo(w*.52,h*.9);ctx.moveTo(w*.08,h*.42);ctx.lineTo(w*.92,h*.38);ctx.stroke();ctx.restore()}
+  function drawLogo(ctx,x,y,w,h){if(logo.complete&&logo.naturalWidth)ctx.drawImage(logo,x,y,w,h);else diamondFallback(ctx,x,y,w,h)}
+
+  function buildCanvas(){
+    const W=1240,H=1754,canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);ctx.fillStyle=BLACK;ctx.fillRect(0,0,W,220);
+    ctx.fillStyle=PINK;ctx.fillRect(70,32,115,5);ctx.fillStyle=ORANGE;ctx.fillRect(185,32,42,5);drawLogo(ctx,70,55,112,126);
+    text(ctx,'ACORD PARENTAL',220,93,52,'700',CREAM);text(ctx,'ACCES PARTICIPANȚI 14-17 ANI',220,137,21,'700',PINK);text(ctx,'DELIRAT  /  EDIȚIA I',220,178,18,'700','#fff');
+    text(ctx,'01 AUG 2026',1165,76,20,'700',CREAM,'right');text(ctx,'21:00 - 04:00',1165,116,23,'700','#fff','right');text(ctx,'LITTLE CLUB & LOUNGE',1165,157,17,'700',CREAM,'right');text(ctx,'STR. SINAIA 3, TÂRGU MUREȘ',1165,187,16,'400','#fff','right');
+    roundedRect(ctx,70,258,1100,86,12,SOFT);ctx.fillStyle=PINK;ctx.fillRect(70,258,7,86);wrap(ctx,'Accesul se face cu bilet valabil, actul minorului în original și acordul completat. Formularul nu garantează accesul dacă regulile evenimentului sau ale locației nu sunt respectate.',95,293,1045,25,17,'400',INK);
+
+    let y=392;y=section(ctx,1,'DATELE MINORULUI',y);field(ctx,'Nume și prenume complet',70,y,675);field(ctx,'Data nașterii',790,y,380);field(ctx,'Telefon minor (opțional)',70,y+78,675);field(ctx,'Vârsta',790,y+78,380);
+    y=625;y=section(ctx,2,'DATELE PĂRINTELUI / REPREZENTANTULUI LEGAL',y);field(ctx,'Nume și prenume complet',70,y,675);field(ctx,'Telefon',790,y,380);text(ctx,'CALITATE',70,y+83,14,'700',GREY);checkbox(ctx,70,y+122,'Părinte');checkbox(ctx,280,y+122,'Tutore');checkbox(ctx,470,y+122,'Alt reprezentant legal');
+    y=836;y=section(ctx,3,'ACORDUL',y);let py=wrap(ctx,'Subsemnatul/Subsemnata, în calitate de părinte sau reprezentant legal al minorului menționat mai sus, îmi exprim acordul ca acesta/aceasta să participe la evenimentul DELIRAT - Ediția I, în intervalul și la locația indicate în antet.',70,y+10,1100,25,17,'400',INK)+14;
+    const bullets=['Am luat la cunoștință că evenimentul are loc într-un club și poate include muzică la volum ridicat, lumini dinamice/stroboscopice și aglomerație.','Înțeleg că minorului îi este strict interzis să cumpere, primească, dețină sau consume alcool, băuturi energizante, produse din tutun/nicotină ori substanțe interzise.','Am informat minorul că trebuie să respecte regulamentul și indicațiile organizatorului, securității și personalului locației; încălcarea regulilor poate duce la refuzarea accesului sau îndepărtarea din eveniment.','Voi fi disponibil(ă) la telefon pe durata participării și sunt de acord să fiu contactat(ă); într-o urgență, organizatorul poate apela serviciul 112.','Declar că informațiile completate sunt corecte și că am autoritatea legală necesară pentru semnarea prezentului acord.'];
+    bullets.forEach((b,i)=>{text(ctx,'•',74,py,24,'700',PINK);py=wrap(ctx,(i+1)+'. '+b,98,py,1060,24,16,'400',INK)+8});
+    roundedRect(ctx,70,py+4,1100,144,12,SOFT);text(ctx,'Prin semnătură confirm că am citit și accept cele de mai sus.',95,py+40,18,'700',INK);field(ctx,'Data',95,py+91,300);field(ctx,'Numele în clar',445,py+91,300);field(ctx,'Semnătura părintelui',795,py+91,340);
+    const s4=py+192;section(ctx,4,'COMPLETAT DE PERSONALUL DE ACCES',s4);checkbox(ctx,70,s4+75,'Act minor verificat');checkbox(ctx,350,s4+75,'Bilet verificat');checkbox(ctx,620,s4+75,'Brățară U18 aplicată');field(ctx,'Ora intrării',965,s4+56,205);field(ctx,'Nume personal acces',70,s4+126,620);field(ctx,'Semnătură',735,s4+126,435);
+    const fy=1690;ctx.fillStyle=PINK;ctx.fillRect(70,fy,115,3);ctx.fillStyle=ORANGE;ctx.fillRect(185,fy,45,3);wrap(ctx,'Protecția datelor: BOOBOO S.R.L. folosește datele exclusiv pentru verificarea accesului, contact în caz de nevoie și gestionarea siguranței evenimentului. Formularul este păstrat maximum 30 de zile după eveniment, cu excepția situațiilor în care un incident sau o obligație legală justifică păstrarea mai îndelungată. Contact: team@radu.studio / 0770 342 348.',70,1715,1100,18,12,'400',GREY);
+    return canvas;
+  }
+
+  function dataUrlBytes(dataUrl){const b64=dataUrl.split(',')[1],bin=atob(b64),out=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out}
+  function pdfFromJpeg(jpeg,width,height){
+    const parts=[],offsets=[0];let total=0;const add=v=>{const a=typeof v==='string'?enc.encode(v):v;parts.push(a);total+=a.length};const start=n=>{offsets[n]=total;add(`${n} 0 obj\n`)};
+    add('%PDF-1.3\n');start(1);add('<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');start(2);add('<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');start(3);add('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.276 841.89] /Resources << /XObject << /Im0 4 0 R >> /ProcSet [/PDF /ImageC] >> /Contents 5 0 R >>\nendobj\n');start(4);add(`<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpeg.length} >>\nstream\n`);add(jpeg);add('\nendstream\nendobj\n');const stream='q\n595.276 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n';start(5);add(`<< /Length ${enc.encode(stream).length} >>\nstream\n${stream}endstream\nendobj\n`);const xref=total;add('xref\n0 6\n0000000000 65535 f \n');for(let i=1;i<=5;i++)add(String(offsets[i]).padStart(10,'0')+' 00000 n \n');add(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);return new Blob(parts,{type:'application/pdf'});
+  }
+  function openPdf(blob){const url=URL.createObjectURL(blob);const mobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);if(mobile){window.location.href=url}else{const a=document.createElement('a');a.href=url;a.download='DELIRAT-Acord-Parental-14-17.pdf';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)}}
+
+  button.addEventListener('click',async()=>{
+    button.disabled=true;status.textContent='Se pregătește PDF-ul...';
+    try{if(!logo.complete)await new Promise(resolve=>{logo.addEventListener('load',resolve,{once:true});logo.addEventListener('error',resolve,{once:true});setTimeout(resolve,2500)});const canvas=buildCanvas();const jpeg=dataUrlBytes(canvas.toDataURL('image/jpeg',.91));const pdf=pdfFromJpeg(jpeg,canvas.width,canvas.height);status.textContent='PDF pregătit.';openPdf(pdf)}catch(error){console.error(error);status.textContent='A apărut o eroare. Deschide linkul în Safari și încearcă din nou.';button.disabled=false}
+  });
+})();
+</script>
 </body>
 </html>
