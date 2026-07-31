@@ -1,0 +1,179 @@
+name: Generate parental agreement PDF
+
+on:
+  push:
+    branches: [gh-pages]
+    paths:
+      - '.github/workflows/generate-parental-pdf.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PDF tools
+        run: pip install reportlab pillow
+      - name: Generate PDF
+        run: |
+          cat > /tmp/generate_pdf.py <<'PY'
+          from reportlab.pdfgen import canvas
+          from reportlab.lib.pagesizes import A4
+          from reportlab.pdfbase import pdfmetrics
+          from reportlab.pdfbase.ttfonts import TTFont
+          from reportlab.lib.colors import HexColor, white
+          from reportlab.lib.utils import ImageReader
+          from reportlab.pdfbase.pdfmetrics import stringWidth
+          from pathlib import Path
+          import os
+
+          OUT = 'acord-parental.pdf'
+          W, H = A4
+          BLACK = HexColor('#050505')
+          CREAM = HexColor('#D9C7B3')
+          PINK = HexColor('#FF0A8A')
+          ORANGE = HexColor('#FF8A00')
+          INK = HexColor('#171419')
+          GREY = HexColor('#706A67')
+          LINE = HexColor('#D4CCC7')
+          SOFT = HexColor('#F4F1EF')
+
+          regular = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
+          bold = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
+          pdfmetrics.registerFont(TTFont('DV', regular))
+          pdfmetrics.registerFont(TTFont('DVB', bold))
+
+          c = canvas.Canvas(OUT, pagesize=A4, pageCompression=1)
+
+          def txt(s, x, y, size=9, bold=False, color=INK, align='left'):
+              font = 'DVB' if bold else 'DV'
+              c.setFont(font, size)
+              c.setFillColor(color)
+              if align == 'right': c.drawRightString(x, y, s)
+              elif align == 'center': c.drawCentredString(x, y, s)
+              else: c.drawString(x, y, s)
+
+          def wrap(s, x, y, maxw, size=8.5, leading=11, bold=False, color=INK):
+              font = 'DVB' if bold else 'DV'
+              words = s.split()
+              lines, line = [], ''
+              for word in words:
+                  test = word if not line else line + ' ' + word
+                  if stringWidth(test, font, size) <= maxw:
+                      line = test
+                  else:
+                      if line: lines.append(line)
+                      line = word
+              if line: lines.append(line)
+              c.setFont(font, size); c.setFillColor(color)
+              for i, ln in enumerate(lines): c.drawString(x, y - i*leading, ln)
+              return y - len(lines)*leading
+
+          def field(label, x, y, width):
+              txt(label.upper(), x, y, 6.8, True, GREY)
+              c.setStrokeColor(LINE); c.setLineWidth(.7)
+              c.line(x, y-13, x+width, y-13)
+
+          def checkbox(x, y, label):
+              c.setStrokeColor(INK); c.setLineWidth(.8)
+              c.rect(x, y-7, 8, 8, stroke=1, fill=0)
+              txt(label, x+13, y-5, 7.2, False, INK)
+
+          def section(n, title, y):
+              c.setFillColor(PINK); c.circle(40, y+1, 7, stroke=0, fill=1)
+              txt(str(n), 40, y-1.5, 6.8, True, white, 'center')
+              txt(title, 54, y-3, 10.2, True, INK)
+              c.setStrokeColor(LINE); c.setLineWidth(.6); c.line(54, y-8, W-34, y-8)
+
+          # Header
+          c.setFillColor(BLACK); c.rect(0, H-105, W, 105, stroke=0, fill=1)
+          c.setFillColor(PINK); c.rect(34, H-20, 67, 2.5, stroke=0, fill=1)
+          c.setFillColor(ORANGE); c.rect(101, H-20, 24, 2.5, stroke=0, fill=1)
+          logo = Path('assets/img/delirat-logo.png')
+          if logo.exists():
+              c.drawImage(ImageReader(str(logo)), 34, H-90, 66, 66, preserveAspectRatio=True, mask='auto')
+          txt('ACORD PARENTAL', 115, H-47, 20.5, True, CREAM)
+          txt('ACCES PARTICIPANȚI 14-17 ANI', 115, H-66, 8.8, True, PINK)
+          txt('DELIRAT  /  EDIȚIA I', 115, H-84, 7.5, True, white)
+          txt('01 AUG 2026', W-34, H-39, 8.2, True, CREAM, 'right')
+          txt('21:00 - 04:00', W-34, H-56, 9, True, white, 'right')
+          txt('LITTLE CLUB & LOUNGE', W-34, H-75, 7, True, CREAM, 'right')
+          txt('STR. SINAIA 3, TÂRGU MUREȘ', W-34, H-89, 6.6, False, white, 'right')
+
+          # Alert
+          y = H-128
+          c.setFillColor(SOFT); c.roundRect(34, y-40, W-68, 37, 5, stroke=0, fill=1)
+          c.setFillColor(PINK); c.roundRect(34, y-40, 4, 37, 2, stroke=0, fill=1)
+          wrap('Accesul se face cu bilet valabil, actul minorului în original și acordul completat. Formularul nu garantează accesul dacă regulile evenimentului sau ale locației nu sunt respectate.', 47, y-17, W-94, 7.2, 9.2)
+
+          # Section 1
+          y = H-196; section(1, 'DATELE MINORULUI', y)
+          field('Nume și prenume complet', 34, y-30, 330)
+          field('Data nașterii', 384, y-30, 177)
+          field('Telefon minor (opțional)', 34, y-66, 330)
+          field('Vârsta', 384, y-66, 177)
+
+          # Section 2
+          y = H-302; section(2, 'DATELE PĂRINTELUI / REPREZENTANTULUI LEGAL', y)
+          field('Nume și prenume complet', 34, y-30, 330)
+          field('Telefon', 384, y-30, 177)
+          txt('CALITATE', 34, y-68, 6.8, True, GREY)
+          checkbox(34, y-84, 'Părinte')
+          checkbox(130, y-84, 'Tutore')
+          checkbox(220, y-84, 'Alt reprezentant legal')
+
+          # Section 3
+          y = H-416; section(3, 'ACORDUL', y)
+          p = 'Subsemnatul/Subsemnata, în calitate de părinte sau reprezentant legal al minorului menționat mai sus, îmi exprim acordul ca acesta/aceasta să participe la evenimentul DELIRAT - Ediția I, în intervalul și la locația indicate în antet.'
+          yy = wrap(p, 34, y-31, W-68, 7.5, 10)
+          bullets = [
+              '1. Am luat la cunoștință că evenimentul are loc într-un club și poate include muzică la volum ridicat, lumini dinamice/stroboscopice și aglomerație.',
+              '2. Înțeleg că minorului îi este strict interzis să cumpere, primească, dețină sau consume alcool, băuturi energizante, produse din tutun/nicotină ori substanțe interzise.',
+              '3. Am informat minorul că trebuie să respecte regulamentul și indicațiile organizatorului, securității și personalului locației; încălcarea regulilor poate duce la refuzarea accesului sau îndepărtarea din eveniment.',
+              '4. Voi fi disponibil(ă) la telefon pe durata participării și sunt de acord să fiu contactat(ă); într-o urgență, organizatorul poate apela serviciul 112.',
+              '5. Declar că informațiile completate sunt corecte și că am autoritatea legală necesară pentru semnarea prezentului acord.'
+          ]
+          yy -= 3
+          for item in bullets:
+              c.setFillColor(PINK); c.circle(39, yy+1.7, 1.4, stroke=0, fill=1)
+              yy = wrap(item, 47, yy+4, W-81, 6.8, 8.4) - 3
+
+          # Signature card
+          card_y = yy-54
+          c.setFillColor(SOFT); c.roundRect(34, card_y, W-68, 54, 5, stroke=0, fill=1)
+          txt('Prin semnătură confirm că am citit și accept cele de mai sus.', 47, card_y+40, 7.4, True, INK)
+          field('Data', 47, card_y+22, 150)
+          field('Numele în clar', 216, card_y+22, 150)
+          field('Semnătura părintelui', 385, card_y+22, 176)
+
+          # Section 4
+          y4 = card_y-20; section(4, 'COMPLETAT DE PERSONALUL DE ACCES', y4)
+          checkbox(34, y4-34, 'Act minor verificat')
+          checkbox(176, y4-34, 'Bilet verificat')
+          checkbox(303, y4-34, 'Brățară U18 aplicată')
+          field('Ora intrării', 473, y4-26, 88)
+          field('Nume personal acces', 34, y4-68, 294)
+          field('Semnătură', 350, y4-68, 211)
+
+          # Privacy footer
+          c.setFillColor(PINK); c.rect(34, 31, 67, 1.5, stroke=0, fill=1)
+          c.setFillColor(ORANGE); c.rect(101, 31, 24, 1.5, stroke=0, fill=1)
+          wrap('Protecția datelor: BOOBOO S.R.L. folosește datele exclusiv pentru verificarea accesului, contact în caz de nevoie și gestionarea siguranței evenimentului. Formularul este păstrat maximum 30 de zile după eveniment, cu excepția situațiilor în care un incident sau o obligație legală justifică păstrarea mai îndelungată. Contact: team@radu.studio / 0770 342 348.', 34, 22, W-68, 5.4, 6.7, False, GREY)
+
+          c.showPage(); c.save()
+          print(os.path.getsize(OUT))
+          PY
+          python /tmp/generate_pdf.py
+      - name: Commit generated PDF
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add acord-parental.pdf
+          git diff --cached --quiet || git commit -m "Generate parental agreement PDF"
+          git push
